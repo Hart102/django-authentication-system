@@ -3,9 +3,12 @@
 <div>
   <h2>User profile</h2>
 
-  <a href="{% url 'update_profile' pk=user.id %}" data-id="{{user.id}}"
-    >Edit profile</a
-  >
+  <div>
+    <a href="{% url 'update_profile' pk=user.id %}" data-id="{{user.id}}"
+      >Edit profile</a
+    >
+    <a href="{% url 'delete_account' pk=user.id %} data-id="{{user.id}}">Delete my account</a>
+  </div>
 
   <div>
     <p>{{user.fullname}}</p>

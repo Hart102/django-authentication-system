@@ -11,6 +11,7 @@
       <input type="email" name="email" placeholder="Enter email" />
       <input type="password" name="password" placeholder="Enter password" />
     </div>
+
     <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
 
     <button>Login</button>
@@ -28,8 +29,15 @@
     {% csrf_token %} {% for field in form %}
     <label>{{ field.label }}</label> &nbsp;:{{field}} {% endfor %}
 
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-    <button>Register</button>
+    {% if not request.user.is_authenticated %}
+      <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+      <button>Register</button>
+
+      {%else%}
+
+      <button>Update</button>
+
+    {% endif %}
   </form>
 
   <!-- <div>

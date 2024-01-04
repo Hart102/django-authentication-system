@@ -9,6 +9,7 @@ from django.http import HttpResponse
 # User Registration Endpoint
 def user_registration (request):
 
+    users = CustomUser.objects.all()
     if request.user.is_authenticated:
         return redirect("profile", pk = request.user.id)
 
@@ -38,7 +39,7 @@ def user_registration (request):
         except IntegrityError as e:
             message = "Something went wrong please try again"
 
-    context = {"form": form, "message": message}
+    context = {"form": form, "message": message, "users": users}
     return render(request, "base/login_register.html", context)
 
 
@@ -51,7 +52,6 @@ def user_login (request):
         return redirect("profile", pk = request.user.id)
 
     if request.method == "POST":
-
         email = request.POST.get("email")
         password = request.POST.get("password")
 
@@ -82,6 +82,10 @@ def user_logout (request):
 
 # User Profile Endpoint
 def user_profile (request, pk):
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+
     user = CustomUser.objects.get(id = pk)
 
     context = {"user": user}
@@ -90,12 +94,28 @@ def user_profile (request, pk):
 
 # User update Profile Endpoint
 def user_update_profile (request, pk):
-    if not user.is_authenticated:
+
+    if not request.user.is_authenticated:
         return HttpResponse("You are not allowed here")
         
-    page = "update"
     user = CustomUser.objects.get(id = pk)
     form = RegistrationForm(instance = user)
 
-    context = {"form": form, "user": user, "page": page}
+    if request.method == "POST":
+        user.email = request.POST.get("email")
+        user.fullname = request.POST.get("fullname").lower()
+        user.phone = request.POST.get("phone")
+
+        user.save()
+        return redirect("profile", pk = request.user.id)
+
+
+    context = {"form": form, "user": user}
     return render(request, "base/login_register.html", context)
+
+
+def delete_account (request, pk):
+    user = CustomUser.objects.get(id = pk)
+
+    context = {"user": user}
+    return render(request, "base/modal.html", context)
