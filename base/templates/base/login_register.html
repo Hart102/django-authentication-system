@@ -1,0 +1,42 @@
+{% extends "main.html" %} {% block content %} {% if page == "login" %}
+
+<div>
+  <h1>Login</h1>
+  {{message}}
+
+  <form action="" method="POST">
+    {% csrf_token %}
+
+    <div>
+      <input type="email" name="email" placeholder="Enter email" />
+      <input type="password" name="password" placeholder="Enter password" />
+    </div>
+    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+
+    <button>Login</button>
+  </form>
+</div>
+
+{% else %}
+
+<div>
+  <h1>Register</h1>
+
+  {{message}}
+
+  <form action="" method="POST">
+    {% csrf_token %} {% for field in form %}
+    <label>{{ field.label }}</label> &nbsp;:{{field}} {% endfor %}
+
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    <button>Register</button>
+  </form>
+
+  <!-- <div>
+    {% for user in users %}
+    <p>{{user.id}}</p>
+    {% endfor %}
+  </div> -->
+</div>
+
+{% endif %} {% endblock%}

@@ -1,0 +1,21 @@
+{% extends "main.html" %} {% block content %}
+
+<div>
+  <h2>User profile</h2>
+
+  <a href="{% url 'update_profile' pk=user.id %}" data-id="{{user.id}}"
+    >Edit profile</a
+  >
+
+  <div>
+    <p>{{user.fullname}}</p>
+    <small>{{user.email}}</small>
+    <p>{{user.phone}}</p>
+  </div>
+
+  <div>
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+</div>
+
+{% endblock %}
