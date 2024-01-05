@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm
 from django.contrib.auth import authenticate, login, logout
 from .models import CustomUser
 from django.http import HttpResponse
@@ -8,13 +7,11 @@ from django.http import HttpResponse
 
 #==========User Registration Endpoint==========
 def user_registration (request):
+    message = ""
 
-    users = CustomUser.objects.all()
     if request.user.is_authenticated:
         return redirect("profile", pk = request.user.id)
 
-    message = ""
-    form = RegistrationForm()
 
     if request.method == "POST":
         email = request.POST.get("email")
@@ -24,15 +21,25 @@ def user_registration (request):
             message = "Email already exist. Please use a new email"
         
         except CustomUser.DoesNotExist:
+          firstname = request.POST.get("firstname")
+          lastname = request.POST.get("lastname")
+          email = request.POST.get("email")
+          phone = request.POST.get("phone")
+          password = request.POST.get("password")
+
+          if not firstname or not lastname or not email or not phone or not password:
+            message = "No input field is allowed to be empty"
+
+          else:
             # ===========Create user===========
             user = CustomUser(
-                firstname = request.POST.get("firstname"),
-                lastname = request.POST.get("lastname"),
-                email = request.POST.get("email"),
-                phone = request.POST.get("phone"),
+                firstname = firstname,
+                lastname = lastname,
+                email = email,
+                phone = phone,
             )
+            user.set_password(password)
 
-            user.set_password(request.POST.get("password"))
             user.save()
             login(request, user)
             return redirect("profile", pk = request.user.id)
@@ -40,7 +47,7 @@ def user_registration (request):
         except IntegrityError as e:
             message = "Something went wrong please try again"
 
-    context = {"form": form, "message": message, "users": users}
+    context = {"message": message}
     return render(request, "base/login_register.html", context)
 
 
@@ -103,10 +110,6 @@ def user_profile (request, pk):
 #=======User update Profile Endpoint=======
 def user_update_profile (request, pk):
     user = CustomUser.objects.get(id = pk)
-    form = RegistrationForm(instance = user)
-    page = "update"
-
-    print(form)
 
     if not request.user.is_authenticated:
         return HttpResponse("You are not allowed here")
@@ -121,7 +124,7 @@ def user_update_profile (request, pk):
         user.save()
         return redirect("profile", pk = request.user.id)
 
-    context = {"form": form, "user": user, "page": page}
+    context = {"user": user}
     return render(request, "base/login_register.html", context)
 
 
