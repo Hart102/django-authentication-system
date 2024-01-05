@@ -3,12 +3,12 @@
 {% block content %}
     <div>
         <div>
-            <b>{{user.fullname}}</b>
+            <b class="text-capitalize">{{user.firstname}}</b>
             are you sure you want delete your account ?
         </div>
-        <div>
-            <a href="">Delete</a>
-            <a href="">Cancel</a>
+        <div class="d-flex justify-content-center justify-content-around mt-4">
+            <a href="{% url 'delete' pk=user.id %}" class="border px-5 py-2 shadow-sm">Delete</a>
+            <a href="{% url 'profile' pk=user.id %}" class="border px-5 py-2 shadow-sm">Cancel</a>
         </div>
     </div>
 {% endblock %}

@@ -1,23 +1,47 @@
 {% extends "main.html" %} {% block content %}
 
-<div>
-  <h2>User profile</h2>
+<style>
+  .profile{
+    width: 300px;
+    max-width: 100%;
+  }
+  .profile p{
+    font-size: 0.7em !important;
+    margin: 0.5em 0;
+  }
+  .image{
+    width: 90px;
+    height: 90px;
+    border-radius: 100%;
+    border: 1px solid rgb(219, 205, 205);
+    margin: 0.8em auto;
+  }
+</style>
+<div class="profile text-center bg-danger1">
 
-  <div>
-    <a href="{% url 'update_profile' pk=user.id %}" data-id="{{user.id}}"
-      >Edit profile</a
+  <div class="mb-4">
+    <a href="{% url 'update_profile' pk=user.id %}"
+      class="shadow-sm p-2">Edit profile</a
     >
-    <a href="{% url 'delete_account' pk=user.id %} data-id="{{user.id}}">Delete my account</a>
+    <a href="{% url 'modal' %}" class="shadow-sm p-2">Delete my account</a>
   </div>
 
-  <div>
-    <p>{{user.fullname}}</p>
-    <small>{{user.email}}</small>
+  <div class="lead text-capitalize">
+    <p class="text-capitalize">{{user.firstname}} {{user.lastname}}</p>
+      <div class="image"></div>
+      <div>
+        <p>Welcome </p>
+        <b>{{user.firstname}} {{user.lastname}}</b>
+
+      </div>
+    <div>
+      <p>{{user.email}}</p>
+    </div>
     <p>{{user.phone}}</p>
   </div>
 
-  <div>
-    <a href="{% url 'logout' %}">Logout</a>
+  <div class="mt-5">
+    <a href="{% url 'logout' %}" class="border px-5 py-2 shadow-sm">Logout</a>
   </div>
 </div>
 

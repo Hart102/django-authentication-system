@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 # Create your views here.
 
-# User Registration Endpoint
+#==========User Registration Endpoint==========
 def user_registration (request):
 
     users = CustomUser.objects.all()
@@ -24,10 +24,11 @@ def user_registration (request):
             message = "Email already exist. Please use a new email"
         
         except CustomUser.DoesNotExist:
-            #---------Create user---------
+            # ===========Create user===========
             user = CustomUser(
+                firstname = request.POST.get("firstname"),
+                lastname = request.POST.get("lastname"),
                 email = request.POST.get("email"),
-                fullname = request.POST.get("fullname"),
                 phone = request.POST.get("phone"),
             )
 
@@ -43,7 +44,9 @@ def user_registration (request):
     return render(request, "base/login_register.html", context)
 
 
-# User Login Endpoint
+
+
+#=========User Login Endpoint=========
 def user_login (request):
     page = "login"
     message = ""
@@ -74,48 +77,65 @@ def user_login (request):
     return render(request, "base/login_register.html", context)
 
 
-# User Logout Endpoint
+
+
+#=========User Logout Endpoint=========
 def user_logout (request):
     logout(request)
     return redirect("login")
 
 
-# User Profile Endpoint
+
+
+#=========User Profile Endpoint=========
 def user_profile (request, pk):
+    user = CustomUser.objects.get(id = pk)
 
     if not request.user.is_authenticated:
         return redirect("login")
-
-    user = CustomUser.objects.get(id = pk)
-
+        
     context = {"user": user}
     return render(request, "base/user_profile.html", context)
 
 
-# User update Profile Endpoint
+
+
+#=======User update Profile Endpoint=======
 def user_update_profile (request, pk):
+    user = CustomUser.objects.get(id = pk)
+    form = RegistrationForm(instance = user)
+    page = "update"
+
+    print(form)
 
     if not request.user.is_authenticated:
         return HttpResponse("You are not allowed here")
         
-    user = CustomUser.objects.get(id = pk)
-    form = RegistrationForm(instance = user)
 
     if request.method == "POST":
+        user.firstname = request.POST.get("firstname").lower()
+        user.lastname = request.POST.get("lastname").lower()
         user.email = request.POST.get("email")
-        user.fullname = request.POST.get("fullname").lower()
         user.phone = request.POST.get("phone")
 
         user.save()
         return redirect("profile", pk = request.user.id)
 
-
-    context = {"form": form, "user": user}
+    context = {"form": form, "user": user, "page": page}
     return render(request, "base/login_register.html", context)
 
 
+
+
+#==========Display modal endpoint==========
+def display_modal (request):
+    user = request.user
+    return render(request, "base/modal.html", {"user": user})
+
+
+
+#==========Delete account endpoint==========
 def delete_account (request, pk):
     user = CustomUser.objects.get(id = pk)
-
-    context = {"user": user}
-    return render(request, "base/modal.html", context)
+    user.delete()
+    return render(request, "base/delete.html")
