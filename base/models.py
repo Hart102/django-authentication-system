@@ -30,8 +30,9 @@ class CustomUser (AbstractBaseUser):
     email = models.EmailField(verbose_name = "email address", max_length = 255, unique = True)
     phone = models.IntegerField()
     password = models.CharField(max_length = 10)
-    imageUrl = models.CharField(max_length = 100)
-    publicId = models.CharField(max_length = 50)
+    image = models.ImageField(upload_to='images', default="")
+    # imageUrl = models.CharField(max_length = 100)
+    publicId = models.CharField(max_length = 50, default="")
     is_admin = models.BooleanField(default = False)
 
     objects = CustomUserManager()

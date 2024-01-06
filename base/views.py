@@ -12,7 +12,6 @@ def user_registration (request):
     if request.user.is_authenticated:
         return redirect("profile", pk = request.user.id)
 
-
     if request.method == "POST":
         email = request.POST.get("email")
 
@@ -113,7 +112,6 @@ def user_update_profile (request, pk):
 
     if not request.user.is_authenticated:
         return HttpResponse("You are not allowed here")
-        
 
     if request.method == "POST":
         user.firstname = request.POST.get("firstname").lower()
