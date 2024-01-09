@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from .models import CustomUser
 from django.http import HttpResponse
+from .form import PhotoForm
 
 # Create your views here.
 
@@ -97,12 +98,30 @@ def user_logout (request):
 def user_profile (request, pk):
     user = CustomUser.objects.get(id = pk)
 
+    print(user)
+
+    # form = PhotoForm()
+    # print(form)
+
     if not request.user.is_authenticated:
         return redirect("login")
         
     context = {"user": user}
     return render(request, "base/user_profile.html", context)
 
+
+
+def update_profile_image (request, pk):
+    user = CustomUser.objects.get(id = pk)
+    
+    if request.method == "POST":
+        user.image = request.FILES
+        user.caption = "new image"
+        print(request.FILES)
+
+
+        user.save()
+    return render(request, "base/profile.html")
 
 
 
@@ -113,13 +132,21 @@ def user_update_profile (request, pk):
     if not request.user.is_authenticated:
         return HttpResponse("You are not allowed here")
 
+    if not firstname or not lastname or not email or not phone or not password:
+        message = "No input field is allowed to be empty"
+
     if request.method == "POST":
         user.firstname = request.POST.get("firstname").lower()
         user.lastname = request.POST.get("lastname").lower()
         user.email = request.POST.get("email")
         user.phone = request.POST.get("phone")
+        # user.image = request.FILES
+
+        # print(request.FILES)/
 
         user.save()
+
+        print(user)
         return redirect("profile", pk = request.user.id)
 
     context = {"user": user}

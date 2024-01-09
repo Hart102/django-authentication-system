@@ -66,11 +66,13 @@
         </div>
         
         {% if not request.user.is_authenticated %}
-          <div class="mb-2">
+          <div>
             <label class="form-label my-0">Password</label>
             <input type="password" name="password" class="form-control" >
           </div>
-          <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+          <div class="my-2">
+            <small>Already have an account? <a href="{% url 'login' %}">Login</a></small>
+          </div>
           <button class="btn btn-primary w-100 py-2" type="submit">Register</button>
         {%else%}
           <button class="btn btn-primary w-100 py-2" type="submit">Update</button>

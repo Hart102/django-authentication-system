@@ -5,10 +5,12 @@
     width: 300px;
     max-width: 100%;
   }
+
   .profile p{
     font-size: 0.7em !important;
     margin: 0.5em 0;
   }
+
   .image{
     width: 90px;
     height: 90px;
@@ -34,6 +36,11 @@
     right: 0;
     color: #888;
   }
+
+  .upload-btn .btn{
+    background: #eee;
+  }
+
 </style>
 <div class="profile text-center">
 
@@ -46,12 +53,19 @@
 
   <div class="lead text-capitalize">
     <p class="text-capitalize">{{user.firstname}} {{user.lastname}}</p>
-      <label for="profile-image" class="image">
-        <img id="imagePreview">
-        <i class="fa fa-camera shadow"></i>
-      </label>
-      </label>
-        <input type="file" class="d-none" id="profile-image">
+      <form action="{% url 'update_profile_image' pk=user.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="d-flex flex-column">
+          <label for="profile-image" class="image">
+            <img id="imagePreview">
+            <i class="fa fa-camera shadow"></i>
+          </label>
+          <input type="file" name="image" class="d-none" id="profile-image">
+          <div class="upload-btn d-none ">
+            <button class="btn">upload</button>
+          </div>
+        </div>
+      </form>
       <div>
         <p>Welcome </p>
         <b>{{user.firstname}} {{user.lastname}}</b>

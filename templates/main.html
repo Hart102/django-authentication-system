@@ -32,15 +32,17 @@
        {% endblock %}
     </div>
 
-    <!-- URL.createObjectURL(image) -->
     <script>
-      const profileImage = document.querySelector("#profile-image")
-      const imagePreview = document.querySelector("#imagePreview")
+      const selector = (element) => document.querySelector(element)
+      const profileImage = selector("#profile-image")
+      const imagePreview = selector("#imagePreview")
+      const uploadBtn = selector(".upload-btn")
 
       profileImage.addEventListener("change", (e) => {
         e.preventDefault()
         const image = profileImage.files[0]
         imagePreview.src = URL.createObjectURL(image)
+        uploadBtn.classList.toggle("d-none")
       })
 
     </script>
