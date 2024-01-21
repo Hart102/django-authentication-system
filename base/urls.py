@@ -8,7 +8,7 @@ urlpatterns = [
 
     path("profile/<str:pk>/", views.user_profile, name="profile"),
     path("update_profile/<str:pk>/", views.user_update_profile, name="update_profile"),
-    path("update_profile_image/<str:pk>/", views.update_profile_image, name="update_profile_image"),
+    path("update_profile_image/", views.update_profile_image, name="update_profile_image"),
     path("modal/", views.display_modal, name="modal"),
     
     path("delete/<str:pk>/", views.delete_account, name="delete"),

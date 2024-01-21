@@ -1,53 +1,40 @@
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from .models import CustomUser
+from .models import User
+from .form import MyUserCreationForm, UserUpdateForm, UpdateImage
 from django.http import HttpResponse
-from .form import PhotoForm
+from django.db import IntegrityError
 
-# Create your views here.
 
 #==========User Registration Endpoint==========
 def user_registration (request):
+    form = MyUserCreationForm()
     message = ""
 
     if request.user.is_authenticated:
         return redirect("profile", pk = request.user.id)
 
     if request.method == "POST":
-        email = request.POST.get("email")
+        form = MyUserCreationForm(request.POST)
 
         try:
-            emailExists = CustomUser.objects.get(email = email)
-            message = "Email already exist. Please use a new email"
-        
-        except CustomUser.DoesNotExist:
-          firstname = request.POST.get("firstname")
-          lastname = request.POST.get("lastname")
-          email = request.POST.get("email")
-          phone = request.POST.get("phone")
-          password = request.POST.get("password")
-
-          if not firstname or not lastname or not email or not phone or not password:
-            message = "No input field is allowed to be empty"
-
-          else:
-            # ===========Create user===========
-            user = CustomUser(
-                firstname = firstname,
-                lastname = lastname,
-                email = email,
-                phone = phone,
-            )
-            user.set_password(password)
-
-            user.save()
-            login(request, user)
-            return redirect("profile", pk = request.user.id)
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.firstname = user.firstname.lower()
+                user.lastname = user.lastname.lower()
+                user.save()
+                login(request, user)
+                return redirect("profile", pk = request.user.id)
+            else:
+                message = "Password mismatched or too short."
 
         except IntegrityError as e:
-            message = "Something went wrong please try again"
+            # print(f"IntegrityError: {e}")
+            message = "Email already exist. Please try another email."
+            
 
-    context = {"message": message}
+    context = { "form": form, "message": message }
     return render(request, "base/login_register.html", context)
 
 
@@ -66,7 +53,7 @@ def user_login (request):
         password = request.POST.get("password")
 
         try:
-            user = CustomUser.objects.get(email = email)
+            user = User.objects.get(email = email)
         except:
             message = "Invalid email or password"
 
@@ -78,7 +65,7 @@ def user_login (request):
 
         else:
             message = "User does not exist"
-        # CustomUser.objects.all().delete()
+        # User.objects.all().delete()
 
     context = {"page": page, "message": message}
     return render(request, "base/login_register.html", context)
@@ -96,12 +83,7 @@ def user_logout (request):
 
 #=========User Profile Endpoint=========
 def user_profile (request, pk):
-    user = CustomUser.objects.get(id = pk)
-
-    print(user)
-
-    # form = PhotoForm()
-    # print(form)
+    user = User.objects.get(id = pk)
 
     if not request.user.is_authenticated:
         return redirect("login")
@@ -111,48 +93,50 @@ def user_profile (request, pk):
 
 
 
-def update_profile_image (request, pk):
-    user = CustomUser.objects.get(id = pk)
-    
-    if request.method == "POST":
-        user.image = request.FILES
-        user.caption = "new image"
-        print(request.FILES)
-
-
-        user.save()
-    return render(request, "base/profile.html")
-
-
 
 #=======User update Profile Endpoint=======
 def user_update_profile (request, pk):
-    user = CustomUser.objects.get(id = pk)
-
-    if not request.user.is_authenticated:
-        return HttpResponse("You are not allowed here")
-
-    if not firstname or not lastname or not email or not phone or not password:
-        message = "No input field is allowed to be empty"
+    user = User.objects.get(id = pk)
+    form = UserUpdateForm(instance=user)
+    message = ""
 
     if request.method == "POST":
-        user.firstname = request.POST.get("firstname").lower()
-        user.lastname = request.POST.get("lastname").lower()
-        user.email = request.POST.get("email")
-        user.phone = request.POST.get("phone")
-        # user.image = request.FILES
+        form = UserUpdateForm(request.POST, instance=user)
 
-        # print(request.FILES)/
+        if form.is_valid():
+            form.save()
+            return redirect("profile", pk = request.user.id)
+        else:
+            message = "Something went wrong please try again"
 
-        user.save()
-
-        print(user)
-        return redirect("profile", pk = request.user.id)
-
-    context = {"user": user}
+    context = { "form": form, "user": user }
     return render(request, "base/login_register.html", context)
 
 
+
+#======Update profile Image Endpoint======
+def update_profile_image (request):
+    user = request.user
+    form = UpdateImage(instance=user)
+
+    # Get previous Image
+    image_path = user.avatar.path
+
+    if request.method == "POST":
+        form = UpdateImage(request.POST, request.FILES, instance=user)
+        
+        if "avatar.svg" in image_path:
+            pass
+        else:
+            if os.path.exists(image_path):
+                os.remove(image_path) #Delete Image
+
+        print(image_path)
+        if form.is_valid():
+            form.save()
+        
+    context = {"form": form}
+    return render(request, "base/user_profile.html", context)
 
 
 #==========Display modal endpoint==========
@@ -164,6 +148,6 @@ def display_modal (request):
 
 #==========Delete account endpoint==========
 def delete_account (request, pk):
-    user = CustomUser.objects.get(id = pk)
+    user = User.objects.get(id = pk)
     user.delete()
     return render(request, "base/delete.html")
