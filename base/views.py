@@ -16,22 +16,44 @@ def user_registration (request):
         return redirect("profile", pk = request.user.id)
 
     if request.method == "POST":
-        form = MyUserCreationForm(request.POST)
-
         try:
+            form = MyUserCreationForm(request.POST)
+
             if form.is_valid():
                 user = form.save(commit=False)
-                user.firstname = user.firstname.lower()
-                user.lastname = user.lastname.lower()
+                user.firstname = request.POST.get("firstname").lower()
+                user.lastname = request.POST.get("lastname").lower()
                 user.save()
                 login(request, user)
                 return redirect("profile", pk = request.user.id)
-            else:
-                message = "Password mismatched or too short."
 
-        except IntegrityError as e:
-            # print(f"IntegrityError: {e}")
-            message = "Email already exist. Please try another email."
+            else:
+                print("Not a valid user")
+        except:
+            print("something went wrong")
+       
+
+
+        # form = MyUserCreationForm(request.POST)
+                
+        # except:
+        #     print("something went wrong")
+
+        # try:
+        #     if form.is_valid():
+        #         user = form.save(commit=False)
+
+        #         user.firstname = user.firstname.lower()
+        #         user.lastname = user.lastname.lower()
+        #         user.save()
+        #         login(request, user)
+        #         return redirect("profile", pk = request.user.id)
+        #     else:
+        #         message = "Password mismatched or too short."
+
+        # except IntegrityError as e:
+        #     # print(f"IntegrityError: {e}")
+        #     message = "Email already exist. Please try another email."
             
 
     context = { "form": form, "message": message }
