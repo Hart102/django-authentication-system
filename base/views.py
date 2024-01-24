@@ -16,44 +16,24 @@ def user_registration (request):
         return redirect("profile", pk = request.user.id)
 
     if request.method == "POST":
-        try:
-            form = MyUserCreationForm(request.POST)
+        # try:
+        form = MyUserCreationForm(request.POST)
 
-            if form.is_valid():
-                user = form.save(commit=False)
-                user.firstname = request.POST.get("firstname").lower()
-                user.lastname = request.POST.get("lastname").lower()
-                user.save()
-                login(request, user)
-                return redirect("profile", pk = request.user.id)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.firstname = request.POST.get("firstname").lower()
+            user.lastname = request.POST.get("lastname").lower()
+            user.save()
+            login(request, user)
+            return redirect("profile", pk = request.user.id)
 
-            else:
-                print("Not a valid user")
-        except:
-            print("something went wrong")
+            # else:
+                # print("Not a valid user")
+        # except:
+        #     print("something went wrong")
        
 
 
-        # form = MyUserCreationForm(request.POST)
-                
-        # except:
-        #     print("something went wrong")
-
-        # try:
-        #     if form.is_valid():
-        #         user = form.save(commit=False)
-
-        #         user.firstname = user.firstname.lower()
-        #         user.lastname = user.lastname.lower()
-        #         user.save()
-        #         login(request, user)
-        #         return redirect("profile", pk = request.user.id)
-        #     else:
-        #         message = "Password mismatched or too short."
-
-        # except IntegrityError as e:
-        #     # print(f"IntegrityError: {e}")
-        #     message = "Email already exist. Please try another email."
             
 
     context = { "form": form, "message": message }
@@ -67,26 +47,26 @@ def user_login (request):
     page = "login"
     message = ""
 
-    if request.user.is_authenticated:
-        return redirect("profile", pk = request.user.id)
+    # if request.user.is_authenticated:
+    #     return redirect("profile", pk = request.user.id)
 
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+    # if request.method == "POST":
+    #     email = request.POST.get("email")
+    #     password = request.POST.get("password")
 
-        try:
-            user = User.objects.get(email = email)
-        except:
-            message = "Invalid email or password"
+    #     try:
+    #         user = User.objects.get(email = email)
+    #     except:
+    #         message = "Invalid email or password"
 
-        user = authenticate(request, email = email, password = password)
+    #     user = authenticate(request, email = email, password = password)
 
-        if user is not None:
-            login(request, user)
-            return redirect("profile", pk = request.user.id)
+    #     if user is not None:
+    #         login(request, user)
+    #         return redirect("profile", pk = request.user.id)
 
-        else:
-            message = "User does not exist"
+    #     else:
+    #         message = "User does not exist"
         # User.objects.all().delete()
 
     context = {"page": page, "message": message}
@@ -122,14 +102,14 @@ def user_update_profile (request, pk):
     form = UserUpdateForm(instance=user)
     message = ""
 
-    if request.method == "POST":
-        form = UserUpdateForm(request.POST, instance=user)
+    # if request.method == "POST":
+    #     form = UserUpdateForm(request.POST, instance=user)
 
-        if form.is_valid():
-            form.save()
-            return redirect("profile", pk = request.user.id)
-        else:
-            message = "Something went wrong please try again"
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect("profile", pk = request.user.id)
+    #     else:
+    #         message = "Something went wrong please try again"
 
     context = { "form": form, "user": user }
     return render(request, "base/login_register.html", context)
@@ -142,20 +122,20 @@ def update_profile_image (request):
     form = UpdateImage(instance=user)
 
     # Get previous Image
-    image_path = user.avatar.path
+    # image_path = user.avatar.path
 
-    if request.method == "POST":
-        form = UpdateImage(request.POST, request.FILES, instance=user)
+    # if request.method == "POST":
+    #     form = UpdateImage(request.POST, request.FILES, instance=user)
         
-        if "avatar.svg" in image_path:
-            pass
-        else:
-            if os.path.exists(image_path):
-                os.remove(image_path) #Delete Image
+    #     if "avatar.svg" in image_path:
+    #         pass
+    #     else:
+    #         if os.path.exists(image_path):
+    #             os.remove(image_path) #Delete Image
 
-        print(image_path)
-        if form.is_valid():
-            form.save()
+    #     print(image_path)
+    #     if form.is_valid():
+    #         form.save()
         
     context = {"form": form}
     return render(request, "base/user_profile.html", context)
@@ -173,3 +153,27 @@ def delete_account (request, pk):
     user = User.objects.get(id = pk)
     user.delete()
     return render(request, "base/delete.html")
+
+
+
+
+# form = MyUserCreationForm(request.POST)
+        
+# except:
+#     print("something went wrong")
+
+# try:
+#     if form.is_valid():
+#         user = form.save(commit=False)
+
+#         user.firstname = user.firstname.lower()
+#         user.lastname = user.lastname.lower()
+#         user.save()
+#         login(request, user)
+#         return redirect("profile", pk = request.user.id)
+#     else:
+#         message = "Password mismatched or too short."
+
+# except IntegrityError as e:
+#     # print(f"IntegrityError: {e}")
+#     message = "Email already exist. Please try another email."
