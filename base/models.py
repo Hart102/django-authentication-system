@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from .managers import CustomUserManager
 
 class User(AbstractUser):
+    username = models.CharField(max_length=150, unique=True)
     firstname = models.CharField(max_length = 200, default="")
     lastname = models.CharField(max_length = 200, default="")
     phoneNumber = models.IntegerField(default = 0)
@@ -12,4 +13,4 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']

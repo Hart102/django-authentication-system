@@ -34,17 +34,19 @@
 
     <script>
       const selector = (element) => document.querySelector(element)
-      const profileImage = selector("#id_avatar")
-      const imagePreview = selector("#imagePreview")
-      const uploadBtn = selector(".upload-btn")
+      const cameraIcon = selector("#camera_icon")
+      const profileImage = selector("#profileImage")
+      const fileInput = selector("#id_avatar")
+      const uploadBtn = selector("button")
 
-      profileImage.addEventListener("change", (e) => {
-        e.preventDefault()
-        const image = profileImage.files[0]
-        imagePreview.src = URL.createObjectURL(image)
-        uploadBtn.classList.toggle("d-none")
-      })
-
+      const activateImageUploadBtn = () => uploadBtn.classList.remove("d-none")
+      const displaySelectedImage = () => {
+        let image = fileInput.files[0]
+        profileImage.src = URL.createObjectURL(image)
+      }
+      
+      cameraIcon.addEventListener("click", activateImageUploadBtn)
+      fileInput.addEventListener("change", displaySelectedImage)
     </script>
   </body>
 </html>

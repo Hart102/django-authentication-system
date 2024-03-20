@@ -11,7 +11,7 @@
     margin: 0.5em 0;
   }
 
-  .image{
+  .image_container{
     width: 90px;
     height: 90px;
     border-radius: 100%;
@@ -21,7 +21,7 @@
     cursor: pointer;
   }
 
-  #imagePreview{
+  #profileImage{
     width: 100%;
     height: 100%;
     position: absolute;
@@ -30,7 +30,7 @@
     border-radius: 100%;
   }
 
-  .image i {
+  .image_container i {
     position: absolute;
     bottom: 10px;
     right: 0;
@@ -56,15 +56,25 @@
       <form action="{% url 'update_profile_image' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="d-flex flex-column">
+          <label for="id_avatar" class="image_container">
+            <img src="{{user.avatar.url}}" id="profileImage">
+            <i class="fa fa-camera shadow" id="camera_icon"></i>
+          </label>
+          <div class="d-none">{{form}}</div>
+          <div>
+            <button class="btn upload-btn text-success d-none">upload</button>
+          </div>
+        </div>
+        <!-- <div class="d-flex flex-column">
           <label for="id_avatar" class="image">
             <img src="{{user.avatar.url}}" id="imagePreview">
-            <i class="fa fa-camera shadow"></i>
+            <i class="fa fa-camera shadow" id="id_avatar"></i>
           </label>
           <div class="d-none">{{form}}</div>
           <div>
             <button class="btn upload-btn d-none">upload</button>
           </div>
-        </div>
+        </div> -->
       </form>
       <div>
         <p>Welcome </p>

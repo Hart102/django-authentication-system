@@ -5,85 +5,68 @@ from .models import User
 from .form import MyUserCreationForm, UserUpdateForm, UpdateImage
 from django.http import HttpResponse
 from django.db import IntegrityError
+from django.contrib.auth.hashers import check_password
 
 
-#==========User Registration Endpoint==========
-def user_registration (request):
+#==========USER REGISTRATION ENDPOINT==========
+def user_registration(request):
     form = MyUserCreationForm()
     message = ""
 
     if request.user.is_authenticated:
-        return redirect("profile", pk = request.user.id)
+        return redirect("profile", pk=request.user.id)
 
     if request.method == "POST":
-        # try:
         form = MyUserCreationForm(request.POST)
-
         if form.is_valid():
             user = form.save(commit=False)
+            user.username = form.cleaned_data['email'] # ASSIGN EMAIL TO USER NAME
             user.firstname = request.POST.get("firstname").lower()
             user.lastname = request.POST.get("lastname").lower()
             user.save()
             login(request, user)
-            return redirect("profile", pk = request.user.id)
+            return redirect("profile", pk=request.user.id)
+        else:
+            message = "Email already exist."
 
-            # else:
-                # print("Not a valid user")
-        # except:
-        #     print("something went wrong")
-       
-
-
-            
-
-    context = { "form": form, "message": message }
+    context = {"form": form, "message": message}
     return render(request, "base/login_register.html", context)
 
 
-
-
-#=========User Login Endpoint=========
+#=========USER LOGIN ENDPOINT=========
 def user_login (request):
+    if request.user.is_authenticated:
+        return redirect("profile", pk = request.user.id)
+        
     page = "login"
     message = ""
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
 
-    # if request.user.is_authenticated:
-    #     return redirect("profile", pk = request.user.id)
+        try:
+            user = User.objects.get(email=email)
+            # COMPARE USER PASSWORD
+            if not check_password(password, user.password):
+                message = "Incorrect Email Or Password"
+            else:
+                login(request, user)
+                return redirect("profile", pk = request.user.id)
 
-    # if request.method == "POST":
-    #     email = request.POST.get("email")
-    #     password = request.POST.get("password")
-
-    #     try:
-    #         user = User.objects.get(email = email)
-    #     except:
-    #         message = "Invalid email or password"
-
-    #     user = authenticate(request, email = email, password = password)
-
-    #     if user is not None:
-    #         login(request, user)
-    #         return redirect("profile", pk = request.user.id)
-
-    #     else:
-    #         message = "User does not exist"
-        # User.objects.all().delete()
+        except:
+            message = "User does not exist!"
 
     context = {"page": page, "message": message}
     return render(request, "base/login_register.html", context)
 
 
-
-
-#=========User Logout Endpoint=========
+#=========USER LOGOUT ENDPOINT=========
 def user_logout (request):
     logout(request)
     return redirect("login")
 
 
-
-
-#=========User Profile Endpoint=========
+#=========USER PROFILE ENDPOINT=========
 def user_profile (request, pk):
     user = User.objects.get(id = pk)
 
@@ -94,49 +77,60 @@ def user_profile (request, pk):
     return render(request, "base/user_profile.html", context)
 
 
-
-
-#=======User update Profile Endpoint=======
+#=======PROFILE UPDATE ENDPOINT=======
 def user_update_profile (request, pk):
     user = User.objects.get(id = pk)
     form = UserUpdateForm(instance=user)
     message = ""
 
-    # if request.method == "POST":
-    #     form = UserUpdateForm(request.POST, instance=user)
-
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect("profile", pk = request.user.id)
-    #     else:
-    #         message = "Something went wrong please try again"
+    if request.method == "POST":
+        form = UserUpdateForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect("profile", pk = request.user.id)
+        else:
+            message = "Something went wrong while updating profile. Please try again!"
 
     context = { "form": form, "user": user }
     return render(request, "base/login_register.html", context)
 
 
-
-#======Update profile Image Endpoint======
+#======IMAGE UPDATE ENDPOINT======
 def update_profile_image (request):
     user = request.user
     form = UpdateImage(instance=user)
 
-    # Get previous Image
-    # image_path = user.avatar.path
+    # GET PREVIOUS IMAGE PATH
+    image_path = user.avatar.path
 
-    # if request.method == "POST":
-    #     form = UpdateImage(request.POST, request.FILES, instance=user)
-        
-    #     if "avatar.svg" in image_path:
-    #         pass
-    #     else:
-    #         if os.path.exists(image_path):
-    #             os.remove(image_path) #Delete Image
+    if request.method == "POST":
+        form = UpdateImage(request.POST, request.FILES, instance=user)
+        # GET THE INDEX OF THE LAST "/" IN THE FROM THE IMAGE PATH
+        indexOfTheLastWord = image_path.rfind("/") 
 
-    #     print(image_path)
-    #     if form.is_valid():
-    #         form.save()
-        
+        if indexOfTheLastWord != -1:
+            # USE THE INDEX TO GET THE LAST WORLD IN THE STRING (WHICH IS THE IMAGE NAME)
+            image_name = image_path[indexOfTheLastWord + len("/"):]
+
+            if form.is_valid():
+                if image_name == "avatar.svg": # PREVENT DELETING OF DEFAULT IMAGE
+                    form.save()
+                elif image_name != "avatar.svg":
+                    if os.path.exists(image_path):
+                        os.remove(image_path) #Delete Image
+            
+                form.save()
+
+
+        # uploadedFile = request.FILES["avatar"]
+        # file_name = uploadedFile.name
+
+        # if image_path.find("avatar.svg") != -1:
+        #     print("Yes, 'avatar.svg' is present in the image path.")
+        # else:
+        #     print("No, 'avatar.svg' is not present in the image path.")
+
+
     context = {"form": form}
     return render(request, "base/user_profile.html", context)
 
@@ -154,26 +148,3 @@ def delete_account (request, pk):
     user.delete()
     return render(request, "base/delete.html")
 
-
-
-
-# form = MyUserCreationForm(request.POST)
-        
-# except:
-#     print("something went wrong")
-
-# try:
-#     if form.is_valid():
-#         user = form.save(commit=False)
-
-#         user.firstname = user.firstname.lower()
-#         user.lastname = user.lastname.lower()
-#         user.save()
-#         login(request, user)
-#         return redirect("profile", pk = request.user.id)
-#     else:
-#         message = "Password mismatched or too short."
-
-# except IntegrityError as e:
-#     # print(f"IntegrityError: {e}")
-#     message = "Email already exist. Please try another email."
