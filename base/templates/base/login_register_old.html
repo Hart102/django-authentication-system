@@ -1,0 +1,82 @@
+{% extends "main.html" %} 
+{% block content %}
+
+  <style>
+    .form-signin{
+      width: 300px;
+      max-width: 100%;
+      margin: auto;
+    }
+
+    .register input{
+      padding: 0.3rem;
+      border-radius: 5px;
+      border: 1px solid #E0e0e0e0 !important;
+    }
+
+    .register .input-fields{
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+
+ {% if page == "login" %}
+
+  <!--====== User Login Form ======-->
+  <div class="form-signin">
+    <p class="text-danger text-center">{{message}}</p>
+    <form action="" method="POST">
+      {% csrf_token %}
+      <h1 class="h6 mb-3 text-center fw-bold">Sign In</h1>
+      <div class="mb-2">
+        <label class="form-label my-0">Email address</label>
+        <input type="email" name="email" class="form-control" >
+      </div>
+      <div>
+        <label class="form-label my-0">Password</label>
+        <input type="password" name="password" class="form-control" >
+      </div>
+      <div class="form-check text-start my-3">
+        <small class="d-flex">Don't have an account? &nbsp; 
+          <a href="{% url 'register' %}" class="text-primary">Register</a>
+        </small>
+      </div>
+      <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
+    </form>
+  </div>
+  
+  {% else %}
+  
+  <!--====== User Registration Form ======-->
+  <div class="form-signin">
+    <p class="text-danger text-center">{{message}}</p>
+
+    {% if not request.user.is_authenticated %}
+      <h1 class="h6 mb-3 text-center fw-bold">Register</h1>
+    {% else %}
+      <h1 class="h6 mb-3 text-center fw-bold">Update Profile</h1>
+    {% endif %}
+
+    <form action="" method="POST" class="register">
+      {% csrf_token %}
+
+      <div class="input-fields">
+        {% for field in form %}
+          <label for="">{{field.label}}</label>
+          {{field}}
+        {% endfor %}
+      </div>
+
+
+        {% if not request.user.is_authenticated %}
+          <div class="my-2">
+            <small>Already have an account? <a href="{% url 'login' %}">Login</a></small>
+          </div>
+          <button class="btn btn-primary w-100 py-2" type="submit">Register</button>
+        {%else%}
+          <button class="btn btn-primary w-100 py-2" type="submit">Update</button>
+        {% endif %}
+    </form>
+  </div>
+
+{% endif %} {% endblock%}

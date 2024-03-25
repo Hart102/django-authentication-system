@@ -1,82 +1,115 @@
-{% extends "main.html" %} 
+{% extends "main.html"%}
+{% load static %}
 {% block content %}
+    <style>
+        body{
+            background-color: #F5F5F5;
+        }
+        .sub-container{
+            width: 1000px;
+            max-width: 100%;
+        }
+        .sub-container .left-container, 
+        .right-container{
+            width: 50%;
+        }
+        form{
+            width: 400px;
+            max-width: 100%;
+        }
+        form input{
+            padding: 0.5em 1em;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        form input:focus{
+            outline: #3A5B22 !important;
+        }
+        form a{
+            color: #3A5B22;
+        }
+        form .btn{
+            border-radius: 10px;
+            background: #3A5B22;
+        }
+        .container .plant_img_container{
+            width: 100%;
+            height: 550px;
+            padding-left: 80px;
+        }
+        .container .plant_img_container img{
+            width: 100%;
+            height: 100%;
+            border-top-left-radius: 40px;
+            border-bottom-left-radius: 40px;
+        }
+        .sign_up_container{
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(2, 1fr)
+        }
 
-  <style>
-    .form-signin{
-      width: 300px;
-      max-width: 100%;
-      margin: auto;
-    }
+        @media screen and (max-width: 768px){
+            .sub-container .left-container {
+                height: 90vh;
+                width: 100vw;
+            }
+            .sign_up_container{
+                grid-template-columns: repeat(1, 1fr)
+            }
+        }
+    </style>
+    <div class="container">
+        <div class="sub-container d-flex mx-auto rounded bg-white px-0 px-md-2">
+            <div class="left-container d-flex flex-column justify-content-center px-3 w-100 px-md-5 w-md-auto">
+                <p class="text-danger text-center">{{message}}</p>
+                <!-- LOGIN FORM -->
+                {% if page == "login" %}
+                    <h3 class="my-5">Welcome back!</h3>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="d-flex flex-column my-4">
+                            <label for="">Email address</label>
+                            <input type="email" name="email" placeholder="tim@gmail.com">
+                        </div>
+                        <div class="d-flex flex-column my-4">
+                            <label for="">Password</label>
+                            <input type="password" name="password" placeholder="tim@123">
+                        </div>
+                        <button class="btn text-white w-100 py-2" type="submit">Sign In</button>
+                        <div class="d-flex text-center my-3">Don't have an account? &nbsp; 
+                            <a href="{% url 'register' %}" >Register</a>
+                        </div>
+                    </form>
+                {% else %}
+                    <!-- REGISTRATION FORM -->
+                    <h3 class="my-5">Get Started Now</h3>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="sign_up_container">
+                            {% for field in form %}
+                                <div class="d-flex flex-column">
+                                    <label for="">{{field.label}}</label>
+                                    {{field}}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <small>Password should be aleast 8 characters long and contain capital letters and special characters</small>
 
-    .register input{
-      padding: 0.3rem;
-      border-radius: 5px;
-      border: 1px solid #E0e0e0e0 !important;
-    }
-
-    .register .input-fields{
-      display: flex;
-      flex-direction: column;
-    }
-  </style>
-
- {% if page == "login" %}
-
-  <!--====== User Login Form ======-->
-  <div class="form-signin">
-    <p class="text-danger text-center">{{message}}</p>
-    <form action="" method="POST">
-      {% csrf_token %}
-      <h1 class="h6 mb-3 text-center fw-bold">Sign In</h1>
-      <div class="mb-2">
-        <label class="form-label my-0">Email address</label>
-        <input type="email" name="email" class="form-control" >
-      </div>
-      <div>
-        <label class="form-label my-0">Password</label>
-        <input type="password" name="password" class="form-control" >
-      </div>
-      <div class="form-check text-start my-3">
-        <small class="d-flex">Don't have an account? &nbsp; 
-          <a href="{% url 'register' %}" class="text-primary">Register</a>
-        </small>
-      </div>
-      <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
-    </form>
-  </div>
-  
-  {% else %}
-  
-  <!--====== User Registration Form ======-->
-  <div class="form-signin">
-    <p class="text-danger text-center">{{message}}</p>
-
-    {% if not request.user.is_authenticated %}
-      <h1 class="h6 mb-3 text-center fw-bold">Register</h1>
-    {% else %}
-      <h1 class="h6 mb-3 text-center fw-bold">Update Profile</h1>
-    {% endif %}
-
-    <form action="" method="POST" class="register">
-      {% csrf_token %}
-
-      <div class="input-fields">
-        {% for field in form %}
-          <label for="">{{field.label}}</label>
-          {{field}}
-        {% endfor %}
-      </div>
-
-
-        {% if not request.user.is_authenticated %}
-          <div class="my-2">
-            <small>Already have an account? <a href="{% url 'login' %}">Login</a></small>
-          </div>
-          <button class="btn btn-primary w-100 py-2" type="submit">Register</button>
-        {%else%}
-          <button class="btn btn-primary w-100 py-2" type="submit">Update</button>
-        {% endif %}
-    </form>
-  </div>
-
-{% endif %} {% endblock%}
+                        {% if not request.user.is_authenticated %}
+                        <button class="btn text-white w-100 py-2 mb-3 mt-4" type="submit">Sign Up</button>
+                        <div class="form-check text-start">
+                            <div>Already have an account? <a href="{% url 'login' %}">Login</a></div>
+                        </div>
+                        {%else%}
+                            <button class="btn text-white w-100 py-2" type="submit">Update Profile</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+            <div class="right-container plant_img_container d-none d-md-block">
+               <img src="{% static 'plant.jpeg' %}">
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -18,17 +18,25 @@ def user_registration(request):
 
     if request.method == "POST":
         form = MyUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.username = form.cleaned_data['email'] # ASSIGN EMAIL TO USER NAME
-            user.firstname = request.POST.get("firstname").lower()
-            user.lastname = request.POST.get("lastname").lower()
-            user.save()
-            login(request, user)
-            return redirect("profile", pk=request.user.id)
-        else:
-            message = "Email already exist."
+        email = request.POST.get("email")
 
+        try:
+            user = User.objects.get(email = email)
+            message = "Email already exist!"
+
+        except User.DoesNotExist:
+            
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.username = form.cleaned_data['email'] # ASSIGN EMAIL TO USER NAME
+                user.firstname = request.POST.get("firstname").lower()
+                user.lastname = request.POST.get("lastname").lower()
+                user.save()
+                login(request, user)
+                return redirect("profile", pk=request.user.id)
+            else:
+                print("something")
+        
     context = {"form": form, "message": message}
     return render(request, "base/login_register.html", context)
 
