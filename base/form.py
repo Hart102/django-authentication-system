@@ -9,8 +9,6 @@ class MyUserCreationForm(UserCreationForm):
     lastname = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'placeholder': 'brown'}))
     email = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'placeholder': 'tim@gmail.com'}))
     phoneNumber = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'placeholder': '+234 901 234 56'}))
-    password1 = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'placeholder': 'TimBrown123@'}))
-    password2 = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'placeholder': 'TimBrown123@'}))
 
     class Meta:
         model = User
@@ -30,4 +28,4 @@ class UserUpdateForm(ModelForm):
 class UpdateImage(ModelForm):
     class Meta:
         model = User
-        fields = ["avatar", "firstname", "lastname", "email", "phoneNumber"]
+        fields = ["avatar", "firstname"]

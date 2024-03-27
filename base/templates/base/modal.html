@@ -1,14 +1,15 @@
 {% extends "main.html" %}
 
 {% block content %}
-    <div>
+
+    <div class="text-center shadow p-5">
         <div>
             <b class="text-capitalize">{{user.firstname}}</b>
             are you sure you want delete your account ?
         </div>
         <div class="d-flex justify-content-center justify-content-around mt-4">
-            <a href="{% url 'delete' pk=user.id %}" class="border px-5 py-2 shadow-sm">Delete</a>
-            <a href="{% url 'profile' pk=user.id %}" class="border px-5 py-2 shadow-sm">Cancel</a>
+            <a href="{% url 'delete' pk=user.id %}" class="text-dark px-5 py-2 font-weight-bold">Delete</a>
+            <a href="{% url 'profile' pk=user.id %}" class="text-dark px-5 py-2 font-weight-bold">Cancel</a>
         </div>
     </div>
 {% endblock %}

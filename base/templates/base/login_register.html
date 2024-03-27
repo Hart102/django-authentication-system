@@ -2,9 +2,6 @@
 {% load static %}
 {% block content %}
     <style>
-        body{
-            background-color: #F5F5F5;
-        }
         .sub-container{
             width: 1000px;
             max-width: 100%;
@@ -48,7 +45,7 @@
             gap: 15px;
             grid-template-columns: repeat(2, 1fr)
         }
-
+        
         @media screen and (max-width: 768px){
             .sub-container .left-container {
                 height: 90vh;
@@ -60,7 +57,7 @@
         }
     </style>
     <div class="container">
-        <div class="sub-container d-flex mx-auto rounded bg-white px-0 px-md-2">
+        <div class="sub-container d-flex mx-auto rounded bg-white">
             <div class="left-container d-flex flex-column justify-content-center px-3 w-100 px-md-5 w-md-auto">
                 <p class="text-danger text-center">{{message}}</p>
                 <!-- LOGIN FORM -->
@@ -83,7 +80,17 @@
                     </form>
                 {% else %}
                     <!-- REGISTRATION FORM -->
-                    <h3 class="my-5">Get Started Now</h3>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'profile' user.id%}" class="text-dark my-5">
+                            <i class="fa fa-angle-left"></i>
+                            Back
+                        </a>
+                    {% endif %}
+
+                    {% if not request.user.is_authenticated %}
+                        <h3 class="my-5">Get Started Now</h3>
+                    {% endif %}
+
                     <form action="" method="POST">
                         {% csrf_token %}
                         <div class="sign_up_container">
@@ -94,7 +101,12 @@
                                 </div>
                             {% endfor %}
                         </div>
-                        <small>Password should be aleast 8 characters long and contain capital letters and special characters</small>
+
+                        {% if not request.user.is_authenticated %}
+                            <div class="py-4">
+                                <small>Password should be aleast 8 characters long and contain capital letters and special characters</small>
+                            </div>
+                        {% endif %}
 
                         {% if not request.user.is_authenticated %}
                         <button class="btn text-white w-100 py-2 mb-3 mt-4" type="submit">Sign Up</button>
@@ -102,7 +114,7 @@
                             <div>Already have an account? <a href="{% url 'login' %}">Login</a></div>
                         </div>
                         {%else%}
-                            <button class="btn text-white w-100 py-2" type="submit">Update Profile</button>
+                            <button class="btn text-white w-100 py-2 mt-5" type="submit">Update Profile</button>
                         {% endif %}
                     </form>
                 {% endif %}

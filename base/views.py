@@ -35,7 +35,7 @@ def user_registration(request):
                 login(request, user)
                 return redirect("profile", pk=request.user.id)
             else:
-                print("something")
+                message = "Please check the password you entered !"
         
     context = {"form": form, "message": message}
     return render(request, "base/login_register.html", context)
@@ -77,11 +77,13 @@ def user_logout (request):
 #=========USER PROFILE ENDPOINT=========
 def user_profile (request, pk):
     user = User.objects.get(id = pk)
+    form = UpdateImage(instance=user)
+    print(form)
 
     if not request.user.is_authenticated:
         return redirect("login")
         
-    context = {"user": user}
+    context = {"user": user, "form": form}
     return render(request, "base/user_profile.html", context)
 
 
